@@ -4,16 +4,16 @@ This repository contains the prototype source code for our USENIX Security'24 pa
 
 ## Contents
 
-* `p4src/` includes the Switch Agent program that calculates SYN cookie using HalfSipHash.
+* `p4src/` includes the Switch Agent program that calculates SYN cookies using HalfSipHash.
 	* `p4src/benchmark/` contains variants of the Switch Agent, for benchmarking max hashing rate using different hash functions (AES or CRC).
-* `ebpf/` includes the Server Agent programs that process cookie-verified new connection handshake and false positive packets.
-	* `ebpf/benchmark/` contains a XDP-based SYN cookie generator, for benchmarking max hashing rate of a server-only solution.
+* `ebpf/` includes the Server Agent ingress and egress programs that process cookie-verified new connections (including the server-side handshake setup) and any false positive packets.
+	* `ebpf/benchmark/` contains an XDP-based SYN cookie generator, for benchmarking max hashing rate of a server-only solution.
 
 ## Usage
 
 ### Loading the Server Agent
 
-Prerequisite: please use kernel 5.10 or newer and install the entire `bcc` toolkit.
+Prerequisite: please use Linux kernel 5.10 or newer and install the entire `bcc` toolkit.
 (For Ubuntu, you may run `sudo apt-get install bpfcc-tools python3-bpfcc linux-headers-$(uname -r)`)
 
 Use the provided python scripts to compile and load the eBPF programs to the interface connected to the programmable switch:
@@ -27,9 +27,9 @@ Prerequisite: please use `bf-sde` version 9.7.1 or newer to compile the P4 progr
 
 ### Benchmarking hash rate
 
-All variants of the Switch Agent will respond to any incoming SYN packet from all non-server ports. To measure maximum hash rate, simply direct your packet generator to generate any TCP packet with TCP flags set to `0x02`, and increase sending rate (observe response packet rate) until loss is observed.
+All variants of the Switch Agent will respond to any incoming SYN packet from all non-server ports. To measure maximum hash rates, simply direct your packet generator to generate any TCP packet with TCP flags set to `0x02`, and increase sending rate (observe response packet rate) until loss is observed.
 
-Note: for AES variant, please first run the controller script to load an arbitrary key; this is required to set up recirculation rounds correctly. 
+Note: for the AES variant, please first run the controller script to load an arbitrary key; this is required to set up recirculation rounds correctly. 
 
 
 ## Citing
